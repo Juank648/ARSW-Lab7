@@ -1,5 +1,5 @@
 var app = (function () {
-    var theObject;
+
     class Point{
         constructor(x,y){
             this.x=x;
@@ -34,20 +34,16 @@ var app = (function () {
         stompClient = Stomp.over(socket);
         
         //subscribe to /topic/TOPICXX when connections succeed
-        stompClient.connect({}, function (frame){
+        stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/newpoint', function (eventbody) {
-                theObject=JSON.parse(eventbody.body);
-                alerta();
-            })
+            stompClient.subscribe('/topic/TOPICXX', function (eventbody) {
+                
+                
+            });
         });
 
     };
     
-    var alerta = function() {
-                alert("Se dibujo");
-
-    };
     
 
     return {
@@ -63,7 +59,7 @@ var app = (function () {
             var pt=new Point(px,py);
             console.info("publishing point at "+pt);
             addPointToCanvas(pt);
-            stompClient.send("/topic/newpoint", {}, JSON.stringify(pt)); 
+
             //publicar el evento
         },
 
