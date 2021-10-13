@@ -37,8 +37,8 @@ var app = (function () {
         stompClient.connect({}, function (frame){
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/newpoint', function (eventbody) {
-                theObject=JSON.parse(eventbody.body);
-                alerta();
+                const object = JSON.parse(eventbody.body);
+                addPointToCanvas(object);
             })
         });
 
@@ -48,13 +48,22 @@ var app = (function () {
                 alert("Se dibujo");
 
     };
-    
+    var loadEventListener = function(){
+        if (window.PointerEvent){
+            canvas.addEventListener("pointerdown", event => {
+                const pt = getMousePosition(event);
+                addPointToCanvas(pt);
+
+                stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));
+            });
+        }
+    }
 
     return {
 
         init: function () {
             var can = document.getElementById("canvas");
-            
+            loadEventListener();
             //websocket connection
             connectAndSubscribe();
         },
@@ -63,7 +72,7 @@ var app = (function () {
             var pt=new Point(px,py);
             console.info("publishing point at "+pt);
             addPointToCanvas(pt);
-            stompClient.send("/topic/newpoint", {}, JSON.stringify(pt)); 
+            stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));
             //publicar el evento
         },
 
