@@ -55,7 +55,7 @@ var app = (function () {
                 const pt = getMousePosition(event);
                 addPointToCanvas(pt);
 
-                stompClient.send("/topic/newpoint."+idnumber, {}, JSON.stringify(pt));
+                stompClient.send("/app/newpoint."+idnumber, {}, JSON.stringify(pt));
             });
         }
     }
@@ -78,7 +78,7 @@ var app = (function () {
             var pt=new Point(px,py);
             console.info("publishing point at "+pt);
             addPointToCanvas(pt);
-            stompClient.send("/topic/newpoint."+idnumber, {}, JSON.stringify(pt));
+            stompClient.send("/app/newpoint."+idnumber, {}, JSON.stringify(pt));
             //publicar el evento
         },
 
