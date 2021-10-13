@@ -1,5 +1,6 @@
 var app = (function () {
     var theObject;
+    var idnumber;
     class Point{
         constructor(x,y){
             this.x=x;
@@ -36,7 +37,7 @@ var app = (function () {
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame){
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/newpoint', function (eventbody) {
+            stompClient.subscribe('/topic/newpoint.'+idnumber, function (eventbody) {
                 const object = JSON.parse(eventbody.body);
                 addPointToCanvas(object);
             })
@@ -48,13 +49,13 @@ var app = (function () {
                 alert("Se dibujo");
 
     };
-    var loadEventListener = function(){
+    var drawCircleEvent = function(){
         if (window.PointerEvent){
             canvas.addEventListener("pointerdown", event => {
                 const pt = getMousePosition(event);
                 addPointToCanvas(pt);
 
-                stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));
+                stompClient.send("/topic/newpoint."+idnumber, {}, JSON.stringify(pt));
             });
         }
     }
@@ -62,9 +63,14 @@ var app = (function () {
     return {
 
         init: function () {
-            var can = document.getElementById("canvas");
-            loadEventListener();
+            //var can = document.getElementById("canvas");
+            //drawCircleEvent();
             //websocket connection
+            //connectAndSubscribe();
+        },
+        connectId: function (id) {
+            idnumber = id;
+            drawCircleEvent();
             connectAndSubscribe();
         },
 
@@ -72,7 +78,7 @@ var app = (function () {
             var pt=new Point(px,py);
             console.info("publishing point at "+pt);
             addPointToCanvas(pt);
-            stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));
+            stompClient.send("/topic/newpoint."+idnumber, {}, JSON.stringify(pt));
             //publicar el evento
         },
 
